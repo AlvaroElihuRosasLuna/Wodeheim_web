@@ -1,0 +1,153 @@
+{% extends 'store/main.html' %}
+{% load static %}
+{% block content %}
+{% if user.is_authenticated %}
+<div class="row">
+	<div class="col-lg-6">
+		<div class="box-element">
+			<a class="btn btn-outline-dark" href="{% url 'cart' %}">&#x2190; Back to Cart</a>
+			<hr>
+			<h3>Order Summary</h3>
+			<hr>
+
+			{% for item in items %}
+			<div class="cart-row">
+				<div style="flex:2"><img class="row-image" src="{{item.product.imageURL}}"></div>
+				<div style="flex:2">
+					<p>{{item.product.name}}</p>
+				</div>
+				<div style="flex:1">
+					<p>${{item.product.price|floatformat:2}}</p>
+				</div>
+				<div style="flex:1">
+					<p>{{item.quantity}}</p>
+				</div>
+			</div>
+			{% endfor %}
+
+			<h5>Items: {{order.get_cart_items}}</h5>
+			<h5>Total: {{order.get_cart_total|floatformat:2}}</h5>
+		</div>
+	</div>
+	
+	<div class="col-lg-6">
+		<div id="paypal-button-container"></div>
+	</div>
+</div>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  </head>
+  <body>
+    <!-- Replace "test" with your own sandbox Business account app client ID -->
+    <script src="https://www.paypal.com/sdk/js?client-id=AYYAyrPBHYXiWvzJXFuW_35_thoH_9Q0u5Lj9oOkBwCMhulsfYnF9Ykv8lsW-pbJ6b1ml9yqWj6Kgpy6&currency=MXN"></script>
+    <!-- Set up a container element for the button -->
+    <div id="paypal-button-container"></div>
+	
+    <script>
+      paypal.Buttons({
+
+        // Order is created on the server and the order id is returned
+        createOrder: function(data, actions) {
+			return actions.order.create({
+				purchase_units: [{
+					amount: {
+						value: '{{ order.get_cart_total|floatformat:2 }}'
+					}
+				}]
+			});
+        },
+        // Finalize the transaction on the server after payer approval
+        onApprove: function(data, actions) {
+			return actions.order.capture().then(function(details){
+				alert("Transaction completed by " + details.payer.name.given_name);
+			});
+		}
+
+      }).render('#paypal-button-container');
+    </script>
+  </body>
+
+
+<script type="text/javascript">
+	var shipping = '{{order.shipping}}'
+	var total = '{{order.get_cart_total}}'
+
+	if (shipping == 'False') {
+		document.getElementById('shipping-info').innerHTML = ''
+	}
+
+	if (user != 'AnonymousUser') {
+		document.getElementById('user-info').innerHTML = ''
+	}
+
+	if (shipping == 'False' && user != 'AnonymousUser') {
+		document.getElementById('form-wrapper').classList.add("hidden");
+		document.getElementById('payment-info').classList.remove("hidden");
+	}
+
+	var form = document.getElementById('form')
+
+	form.addEventListener('submit', function (e) {
+		e.preventDefault()
+		console.log('Enviando formulario...')
+		document.getElementById('form-button').classList.add('hidden')
+		document.getElementById('payment-info').classList.remove('hidden')
+	})
+/*
+	document.getElementById('make-payment').addEventListener('click', function (e) {
+		submitFormData()
+	})
+*/
+	function submitFormData() {
+		console.log('Payment button clicked')
+
+		var userFormData = {
+			'name': null,
+			'email': null,
+			'total': total,
+		}
+
+		var shippingInfo = {
+			'address': null,
+			'city': null,
+			'state': null,
+			'zipcode': null,
+		}
+
+		if (shipping != 'False') {
+			shippingInfo.address = form.address.value
+			shippingInfo.city = form.city.value
+			shippingInfo.state = form.state.value
+			shippingInfo.zipcode = form.zipcode.value
+		}
+
+		var url = '/process_order/'
+		fetch(url, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'X-CSRFToken': csrftoken,
+			},
+			body: JSON.stringify({ 'form': userFormData, 'shipping': shippingInfo })
+		})
+			.then((Response) => Response.json())
+			.then((data) => {
+				console.log('Success: ', data);
+				alert('Transacion completada');
+
+				cart = {}
+				document.cookie ='cart=' + JSON.stringify(cart) + ";domain;path=/"
+
+				window.location.href = "{% url 'store' %}"
+			})
+
+	}
+
+</script>
+{% else %}
+	<title>Por favor inicia seson o registrate</title>
+
+{% endif %}
+{% endblock content %}

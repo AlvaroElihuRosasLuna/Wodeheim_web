@@ -1,0 +1,17 @@
+{% extends 'store/main.html' %}
+{% load static %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-4">
+        <img class="img-fluid float-left mr-3" src="{{product.image.url}}">
+    </div>
+    <div class="col-lg-8">
+        <div class="box-element product">
+            <h3 class="font-weight-bold">{{product.name}}</h3>
+            <hr>
+            <p>{{product.description}}</p> <!-- muestra la descripción del producto -->
+        </div>
+    </div>
+</div>
+{% endblock content %}

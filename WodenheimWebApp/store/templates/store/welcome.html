@@ -1,0 +1,79 @@
+{% extends 'store/main.html' %}
+{% block content %}
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <title>WodenHeim Web - Página de inicio</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+    <style>
+    .hero {
+        background-image: url("{% static 'images/imagen4.jpg' %}");
+        background-size: 100% auto;
+        text-align: center;
+        padding: 200px;
+        background-size:cover;
+        color:#ffffff; 
+        size: 0cap;
+        font-size: 40px;
+    }
+
+    .hero h1 {
+            font-size: 3rem;
+            color: #ffffff;
+        }
+
+        .hero p {
+            font-size: 1.5rem;
+        }
+    
+    .features {
+        display: flex;
+        justify-content: center;
+        margin-top: 50px;
+    }
+
+    .feature {
+        text-align: center;
+        margin: 0 300px;
+    }
+
+    .feature img {
+        width: 200px;
+        height: 200px;
+        object-fit: cover;
+        border-radius: 50%;
+    }
+
+    footer {
+        background-color: #333;
+        color: #ffffff;
+        text-align: center;
+        padding: 20px;
+    }
+    </style>
+</head>
+<body>
+
+    <section class="hero">
+        <h1>¡Bienvenido!</h1>
+        <p>Somos productores independientes de Hidromiel & Cerveza Artesanal</p>
+    </section>
+
+    <section class="features">
+        <div class="feature">
+            <img src="{% static 'images/hidromielhome.jpg' %}" alt="hidromiel">
+            <h2>Hidromiel</h2>
+            <p>La bebida alcohólica más antigua de la humanidad. 
+               También llamada “aguamiel”, se obtiene de la fusión de agua y miel que, 
+               con un poco de levadura, puede fermentar 
+               y adquirir las propiedades de una bebida alcohólica sin gluten.</p>
+             
+        </div>
+    </section>
+
+    <footer>
+        <p>© 2023 WodenHeim Web. Todos los derechos reservados.</p>
+    </footer>
+</body>
+{% endblock content %}
+
